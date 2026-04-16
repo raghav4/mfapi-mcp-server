@@ -14,7 +14,7 @@ from mcp.server.fastmcp import FastMCP
 
 BASE_URL = "https://api.mfapi.in"
 
-mcp = FastMCP("mfapi", description="Indian mutual fund data via mfapi.in")
+mcp = FastMCP("mfapi")
 
 
 def _client() -> httpx.Client:
