@@ -1,32 +1,51 @@
 # mfapi-mcp-server
 
-Local MCP server for [mfapi.in](https://mfapi.in) — a free API for Indian mutual fund data.
+A local [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that wraps
+[mfapi.in](https://mfapi.in) — a free, open API for Indian mutual fund NAV data — so you can
+query mutual fund schemes, NAV history, and latest prices directly from Claude or any MCP-compatible client.
+
+> **All mutual fund data is provided by [mfapi.in](https://mfapi.in).**
+> This server is just a thin MCP wrapper; mfapi.in does all the heavy lifting.
+> Please respect their service and avoid hammering it with bulk requests.
+
+---
 
 ## tools
 
-| tool | description |
-|---|---|
-| `search_mf` | search schemes by name or keyword |
-| `list_mf` | paginated list of all schemes |
-| `get_nav_history` | NAV history for a scheme (optional date range) |
-| `get_latest_nav` | latest NAV for a scheme |
+| tool | description | key params |
+|---|---|---|
+| `search_mf` | search schemes by name or keyword | `query` |
+| `list_mf` | paginated list of all schemes | `limit`, `offset` |
+| `get_nav_history` | full or date-ranged NAV history | `scheme_code`, `start_date`, `end_date` |
+| `get_latest_nav` | current NAV for a scheme | `scheme_code` |
+
+Scheme codes are numeric strings (e.g. `125497`). Use `search_mf` to find the code for any fund.
+
+Dates for `get_nav_history` are in `DD-MM-YYYY` format (e.g. `01-01-2023`).
+
+---
 
 ## requirements
 
-- [uv](https://docs.astral.sh/uv/) — used to run the server and manage dependencies
-- Python ≥ 3.10 (uv downloads one automatically if needed)
+- [uv](https://docs.astral.sh/uv/) — handles Python and dependency management
+- Python ≥ 3.10 (uv will download one automatically if needed)
+- No API key required — mfapi.in is free and open
 
-## setup
+---
+
+## installation
 
 ```bash
-# install dependencies into a local venv
-cd /Users/raghavsharma/Documents/mfapi-mcp-server
+git clone https://github.com/your-username/mfapi-mcp-server
+cd mfapi-mcp-server
 uv sync
 ```
 
+---
+
 ## wiring into claude code
 
-Add to `~/.claude/mcp.json`:
+Add to `~/.claude/mcp.json` (create the file if it doesn't exist):
 
 ```json
 {
@@ -36,7 +55,7 @@ Add to `~/.claude/mcp.json`:
       "args": [
         "run",
         "--project",
-        "/path/to/mfapi-mcp-server",
+        "/absolute/path/to/mfapi-mcp-server",
         "mfapi-mcp"
       ]
     }
@@ -44,21 +63,41 @@ Add to `~/.claude/mcp.json`:
 }
 ```
 
-Then restart Claude Code. The four tools will appear automatically.
+Restart Claude Code — the four tools will be available immediately.
 
-## example usage
+---
+
+## example prompts
 
 ```
-search for hdfc top 100 fund
-→ search_mf("HDFC Top 100")
-
+search for hdfc top 100 fund scheme code
 get latest nav for scheme 125497
-→ get_latest_nav("125497")
-
-get nav history for 2023
-→ get_nav_history("125497", start_date="01-01-2023", end_date="31-12-2023")
+show me nav history for mirae asset large cap from january to december 2023
+list 20 ELSS funds
 ```
 
-## date format
+---
 
-`get_nav_history` accepts dates as `DD-MM-YYYY` (e.g. `01-01-2023`), matching the mfapi.in convention.
+## running manually
+
+```bash
+# start the server over stdio (for testing)
+uv run mfapi-mcp
+```
+
+---
+
+## data source & credits
+
+All mutual fund data — scheme codes, NAV history, fund metadata — comes from
+**[mfapi.in](https://mfapi.in)**, a free and open Indian mutual fund API built and maintained by
+the open-source community. This project is not affiliated with mfapi.in; it simply provides an
+MCP interface on top of their public API.
+
+If you find mfapi.in useful, consider starring or contributing to their project.
+
+---
+
+## license
+
+MIT — see [LICENSE](LICENSE).
