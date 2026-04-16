@@ -10,6 +10,16 @@ query mutual fund schemes, NAV history, and latest prices directly from Claude o
 
 ---
 
+## one-click install
+
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mfapi&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22--from%22%2C%22git%2Bhttps%3A//github.com/raghav4/mfapi-mcp-server%22%2C%22mfapi-mcp%22%5D%7D)
+[![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=mfapi&config=%7B%22command%22%3A%22uvx%22%2C%22args%22%3A%5B%22--from%22%2C%22git%2Bhttps%3A//github.com/raghav4/mfapi-mcp-server%22%2C%22mfapi-mcp%22%5D%7D&quality=insiders)
+[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=mfapi&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyItLWZyb20iLCJnaXQraHR0cHM6Ly9naXRodWIuY29tL3JhZ2hhdjQvbWZhcGktbWNwLXNlcnZlciIsIm1mYXBpLW1jcCJdfQ==)
+
+> **requires [uv](https://docs.astral.sh/uv/) to be installed** — `brew install uv` or see [uv docs](https://docs.astral.sh/uv/getting-started/installation/)
+
+---
+
 ## tools
 
 | tool | description | key params |
@@ -33,56 +43,51 @@ Dates for `get_nav_history` are in `DD-MM-YYYY` format (e.g. `01-01-2023`).
 
 ---
 
-## installation
+## manual installation
 
-```bash
-git clone https://github.com/your-username/mfapi-mcp-server
-cd mfapi-mcp-server
-uv sync
-```
+### claude desktop
 
----
-
-## wiring into claude code
-
-Add to `~/.claude/mcp.json` (create the file if it doesn't exist):
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "mfapi": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--project",
-        "/absolute/path/to/mfapi-mcp-server",
-        "mfapi-mcp"
-      ]
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/raghav4/mfapi-mcp-server", "mfapi-mcp"]
     }
   }
 }
 ```
 
-Restart Claude Code — the four tools will be available immediately.
+### claude code (cli)
+
+```bash
+claude mcp add --scope user mfapi uvx -- --from git+https://github.com/raghav4/mfapi-mcp-server mfapi-mcp
+```
+
+### other clients (cursor, windsurf, etc.)
+
+```json
+{
+  "mcpServers": {
+    "mfapi": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/raghav4/mfapi-mcp-server", "mfapi-mcp"]
+    }
+  }
+}
+```
 
 ---
 
 ## example prompts
 
 ```
-search for hdfc top 100 fund scheme code
+search for hdfc top 100 fund
 get latest nav for scheme 125497
 show me nav history for mirae asset large cap from january to december 2023
-list 20 ELSS funds
-```
-
----
-
-## running manually
-
-```bash
-# start the server over stdio (for testing)
-uv run mfapi-mcp
+list 20 elss funds
 ```
 
 ---
@@ -94,7 +99,7 @@ All mutual fund data — scheme codes, NAV history, fund metadata — comes from
 the open-source community. This project is not affiliated with mfapi.in; it simply provides an
 MCP interface on top of their public API.
 
-If you find mfapi.in useful, consider starring or contributing to their project.
+If you find mfapi.in useful, consider supporting their project.
 
 ---
 
